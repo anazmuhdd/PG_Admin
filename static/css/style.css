@@ -1,0 +1,222 @@
+:root {
+  --primary: #6c63ff;
+  --danger: #e63946;
+  --bg: rgba(255, 255, 255, 0.9);
+  --text: #212529;
+}
+
+/* Background with blur overlay */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.bg-overlay {
+  background: url("backgroundimg.jpg") no-repeat center/cover;
+  filter: blur(2px) brightness(0.75);
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+header {
+  background: var(--primary);
+  color: white;
+  padding: 18px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.controls {
+  padding: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg);
+  border-radius: 12px;
+  margin: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+input[type="date"],
+input[type="number"],
+input[type="text"],
+select {
+  padding: 8px 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.table-section {
+  padding: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+thead {
+  background: #f1f1f1;
+}
+
+th, td {
+  padding: 12px;
+  font-size: 0.95rem;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.edit-btn {
+  background: var(--primary);
+  color: white;
+}
+.delete-btn {
+  background: var(--danger);
+  color: white;
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.3s ease;
+}
+button:hover {
+  opacity: 0.85;
+}
+
+#noOrders {
+  text-align: center;
+  margin-top: 20px;
+  color: #333;
+  font-style: italic;
+}
+
+/* Loader */
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 40px auto;
+  gap: 10px;
+}
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #ddd;
+  border-top: 5px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.hidden {
+  display: none !important;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  z-index: 2000;
+}
+
+.modal-inner {
+  width: 92%;
+  max-width: 440px;
+}
+
+.modal-content {
+  background: var(--bg);
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+}
+
+.modal-content label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.save-btn {
+  background: var(--primary);
+  color: white;
+}
+.cancel-btn {
+  background: var(--danger);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  table, thead, tbody, th, td, tr { display: block; }
+  thead { display: none; }
+
+  tr {
+    margin-bottom: 14px;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  td {
+    text-align: right;
+    padding: 6px 10px;
+    position: relative;
+  }
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    font-weight: bold;
+    text-align: left;
+  }
+}
+.create-btn {
+  background: #28a745;
+  color: white;
+  font-weight: bold;
+}
+.create-btn:hover {
+  opacity: 0.9;
+}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Order Details</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <!-- Background overlay -->
+    <div class="bg-overlay"></div>
+
+    <header>
+      <h1>🍽️ Order Dashboard</h1>
+    </header>
+
+    <section class="controls">
+      <label for="datePicker">📅 Select Date:</label>
+      <input type="date" id="datePicker" />
+      <button id="createOrderBtn" class="create-btn">➕ New Order</button>
+    </section>
+
+    <!-- Loader -->
+    <div id="loader" class="loader hidden">
+      <div class="spinner"></div>
+      <p>Loading orders...</p>
+    </div>
+
+    <section class="table-section">
+      <table id="ordersTable" aria-describedby="noOrders">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Breakfast</th>
+            <th>Lunch</th>
+            <th>Dinner</th>
+            <th>Total</th>
+            <th>Cancelled</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="noOrders" class="hidden">No orders for this date.</div>
+    </section>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-inner">
+        <div class="modal-content">
+          <h2>Edit Order ✏️</h2>
+          <form id="editForm">
+            <input type="hidden" id="editId" />
+
+            <label for="editUser">User (user_id):</label>
+            <input type="text" id="editUser" name="user_id" required />
+
+            <label for="editBreakfast">Breakfast:</label>
+            <select id="editBreakfast" name="breakfast">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+
+            <label for="editLunch">Lunch:</label>
+            <select id="editLunch" name="lunch">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+
+            <label for="editDinner">Dinner:</label>
+            <select id="editDinner" name="dinner">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+
+            <label for="editTotal">Total Amount (₹):</label>
+            <input
+              type="number"
+              id="editTotal"
+              name="total_amount"
+              min="0"
+              step="0.01"
+              required
+            />
+
+            <label for="editCanceled">Cancelled:</label>
+            <select id="editCanceled" name="canceled">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+
+            <div class="modal-actions">
+              <button type="submit" class="save-btn">💾 Save</button>
+              <button type="button" class="cancel-btn closeModal">
+                ❌ Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Modal -->
+    <div id="createModal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-inner">
+        <div class="modal-content">
+          <h2>Create Order ➕</h2>
+          <form id="createForm">
+            <label for="createUser">Select User:</label>
+            <select id="createUser" required></select>
+
+            <label for="createBreakfast">Breakfast:</label>
+            <select id="createBreakfast">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+
+            <label for="createLunch">Lunch:</label>
+            <select id="createLunch">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+
+            <label for="createDinner">Dinner:</label>
+            <select id="createDinner">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+
+            <label for="createDate">Order Date:</label>
+            <input type="date" id="createDate" required />
+
+            <label for="createCanceled">Cancelled:</label>
+            <select id="createCanceled">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+
+            <div class="modal-actions">
+              <button type="submit" class="save-btn">✅ Create</button>
+              <button type="button" class="cancel-btn closeModal">
+                ❌ Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>
