@@ -1,5 +1,5 @@
 // js/app.js
-const API_BASE = "https://pg-app-backend.onrender.com/";
+const API_BASE = "https://pg-app-backend.onrender.com";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
