@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const datePicker = document.getElementById("datePicker");
   const tableBody = document.querySelector("#ordersTable tbody");
   const noOrders = document.getElementById("noOrders");
-
   // Modals
   const editModal = document.getElementById("editModal");
   const createModal = document.getElementById("createModal");
@@ -70,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Date change handler
   datePicker.addEventListener("change", () => {
     fetchAndRender(datePicker.value);
+    console.log(datePicker.value);
   });
 
   // Table click handling
@@ -122,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
         editDinner.value = String(editingOrder.dinner);
         editTotal.value = editingOrder.total_amount ?? 0;
         editCanceled.value = String(editingOrder.canceled);
+
         editModal.classList.remove("hidden");
         setTimeout(() => editUser.focus(), 120);
       })
@@ -151,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
       whatsapp_id: editId.value,
       username: editUser.value.trim() || "Unknown",
       total_amount: totalVal,
-      date: editingOrder.order_date,
+      date: datePicker.value,
     };
 
     // ✅ Only include if explicitly true

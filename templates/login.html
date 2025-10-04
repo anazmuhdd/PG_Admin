@@ -3,20 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon for browser tab -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+
+    <!-- iPhone / iPad home screen icon -->
+    <link rel="apple-touch-icon" href="/logo.png" />
+
+    <!-- Optional: web app manifest (if you want it to act like a mini app) -->
+    <link rel="manifest" href="/manifest.json" />
+
     <title>Admin Login</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/login.css') }}"
-    />
+    <link rel="stylesheet" href="/css/login.css" />
   </head>
   <body>
     <div class="login-container">
       <div class="login-box">
         <h2>Admin Login</h2>
-        {% if error %}
-        <p class="error">{{ error }}</p>
-        {% endif %}
-        <form id="loginForm" method="POST">
+        <!-- You can show error manually using JS if you want -->
+        <form id="loginForm" method="POST" action="/login">
           <div class="input-group">
             <input type="text" name="username" required />
             <label>Username</label>
@@ -30,6 +34,6 @@
       </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    <script src="/js/login.js"></script>
   </body>
 </html>

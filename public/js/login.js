@@ -1,4 +1,3 @@
-// Optional: subtle background animation
 document.addEventListener("DOMContentLoaded", () => {
   const colors = ["#6a11cb", "#2575fc", "#fc466b", "#3f5efb"];
   let i = 0;
