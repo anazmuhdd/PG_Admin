@@ -5,7 +5,7 @@ const API_BASE = "https://pg-app-backend.onrender.com";
 async function retryRequest(url, options = {}, retries = 3, delay = 1000) {
   try {
     const response = await fetch(url, options);
-    
+
     // If it's a 500 error and we have retries left, retry
     if (response.status === 500 && retries > 0) {
       console.warn(
@@ -14,7 +14,7 @@ async function retryRequest(url, options = {}, retries = 3, delay = 1000) {
       await new Promise((r) => setTimeout(r, delay));
       return retryRequest(url, options, retries - 1, delay * 2);
     }
-    
+
     return response;
   } catch (err) {
     if (retries > 0) {
@@ -109,19 +109,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Update count box
   function updateCountBox(orders) {
-    const breakfastCount = orders.filter(o => o.breakfast && !o.canceled).length;
-    const lunchCount = orders.filter(o => o.lunch && !o.canceled).length;
-    const dinnerCount = orders.filter(o => o.dinner && !o.canceled).length;
+    const breakfastCount = orders.filter(
+      (o) => o.breakfast && !o.canceled
+    ).length;
+    const lunchCount = orders.filter((o) => o.lunch && !o.canceled).length;
+    const dinnerCount = orders.filter((o) => o.dinner && !o.canceled).length;
+
+    // Price configuration (in rupees)
+    const BREAKFAST_PRICE = 40;
+    const LUNCH_PRICE = 70;
+    const DINNER_PRICE = 40;
+
+    // Calculate total amount
+    const totalAmount =
+      breakfastCount * BREAKFAST_PRICE +
+      lunchCount * LUNCH_PRICE +
+      dinnerCount * DINNER_PRICE;
 
     document.getElementById("breakfastCount").textContent = breakfastCount;
     document.getElementById("lunchCount").textContent = lunchCount;
     document.getElementById("dinnerCount").textContent = dinnerCount;
+    document.getElementById("totalAmount").textContent = `₹${totalAmount}`;
   }
 
   async function fetchAndRender(date) {
     showLoader();
     try {
-      const res = await retryRequest(`${API_BASE}/detailed_summary?date=${date}`);
+      const res = await retryRequest(
+        `${API_BASE}/detailed_summary?date=${date}`
+      );
       if (!res.ok) throw new Error("Failed to fetch orders");
       const data = await res.json();
       renderOrders(data.orders || []);
@@ -257,17 +273,23 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await retryRequest(`${API_BASE}/users`);
       const data = await res.json();
-      
+
       // Fetch orders for the selected date to check which users already have orders
-      const ordersRes = await retryRequest(`${API_BASE}/detailed_summary?date=${datePicker.value}`);
+      const ordersRes = await retryRequest(
+        `${API_BASE}/detailed_summary?date=${datePicker.value}`
+      );
       const ordersData = await ordersRes.json();
-      const existingUserIds = new Set((ordersData.orders || []).map(o => o.whatsapp_id));
-      
+      const existingUserIds = new Set(
+        (ordersData.orders || []).map((o) => o.whatsapp_id)
+      );
+
       createUser.innerHTML = "";
-      
+
       // Filter users - only show users without orders on the selected date
-      const availableUsers = data.users.filter(u => !existingUserIds.has(u.whatsapp_id));
-      
+      const availableUsers = data.users.filter(
+        (u) => !existingUserIds.has(u.whatsapp_id)
+      );
+
       if (availableUsers.length === 0) {
         const opt = document.createElement("option");
         opt.disabled = true;
@@ -275,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
         createUser.appendChild(opt);
         return;
       }
-      
+
       availableUsers.forEach((u) => {
         const opt = document.createElement("option");
         opt.value = u.whatsapp_id;

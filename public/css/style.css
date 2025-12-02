@@ -423,10 +423,12 @@ button:hover {
     gap: 10px;
     padding: 12px;
     box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
   .count-item {
-    flex: 1 1 calc(33.333% - 8px);
+    flex: none;
     min-width: unset;
     padding: 10px;
   }
@@ -559,6 +561,12 @@ button:hover {
 
 .count-item.dinner {
   border-left-color: #4ECDC4;
+}
+
+.count-item.total {
+  border-left-color: #2ECC71;
+  background: rgba(46, 204, 113, 0.2);
+  font-weight: bold;
 }
 
 
