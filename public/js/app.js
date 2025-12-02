@@ -1,13 +1,35 @@
 // js/app.js
 const API_BASE = "https://pg-app-backend.onrender.com";
 
+// ============ RETRY LOGIC FOR 500 ERRORS ============
+async function retryRequest(url, options = {}, retries = 3, delay = 1000) {
+  try {
+    const response = await fetch(url, options);
+    
+    // If it's a 500 error and we have retries left, retry
+    if (response.status === 500 && retries > 0) {
+      console.warn(
+        `⚠️ Server 500 error. Retrying ${url} in ${delay}ms... (${retries} retries left)`
+      );
+      await new Promise((r) => setTimeout(r, delay));
+      return retryRequest(url, options, retries - 1, delay * 2);
+    }
+    
+    return response;
+  } catch (err) {
+    if (retries > 0) {
+      console.warn(
+        `⚠️ Network error. Retrying ${url} in ${delay}ms... (${retries} retries left)`
+      );
+      await new Promise((r) => setTimeout(r, delay));
+      return retryRequest(url, options, retries - 1, delay * 2);
+    }
+    throw err;
+  }
+}
+
 function today() {
   return new Date().toISOString().slice(0, 10);
-}
-function yesterday() {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -85,10 +107,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Update count box
+  function updateCountBox(orders) {
+    const breakfastCount = orders.filter(o => o.breakfast && !o.canceled).length;
+    const lunchCount = orders.filter(o => o.lunch && !o.canceled).length;
+    const dinnerCount = orders.filter(o => o.dinner && !o.canceled).length;
+
+    document.getElementById("breakfastCount").textContent = breakfastCount;
+    document.getElementById("lunchCount").textContent = lunchCount;
+    document.getElementById("dinnerCount").textContent = dinnerCount;
+  }
+
   async function fetchAndRender(date) {
     showLoader();
     try {
-      const res = await fetch(`${API_BASE}/detailed_summary?date=${date}`);
+      const res = await retryRequest(`${API_BASE}/detailed_summary?date=${date}`);
       if (!res.ok) throw new Error("Failed to fetch orders");
       const data = await res.json();
       renderOrders(data.orders || []);
@@ -96,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(err);
       tableBody.innerHTML = "";
       noOrders.classList.remove("hidden");
+      alert("Error loading orders. Please try again.");
     } finally {
       hideLoader();
     }
@@ -104,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Open edit modal
   function openEditModal(whatsapp_id) {
     showLoader();
-    fetch(`${API_BASE}/orders/${whatsapp_id}`)
+    retryRequest(`${API_BASE}/orders/${whatsapp_id}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data.orders || data.orders.length === 0) {
@@ -125,6 +159,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         editModal.classList.remove("hidden");
         setTimeout(() => editUser.focus(), 120);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Error loading order details. Please try again.");
       })
       .finally(() => hideLoader());
   }
@@ -173,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     showLoader();
     try {
-      const res = await fetch(`${API_BASE}/orders`, {
+      const res = await retryRequest(`${API_BASE}/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -195,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!confirm("Cancel order for user " + whatsapp_id + "?")) return;
     showLoader();
     try {
-      const res = await fetch(`${API_BASE}/orders/cancel_by_date`, {
+      const res = await retryRequest(`${API_BASE}/orders/cancel_by_date`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -217,10 +255,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------------- CREATE ORDER LOGIC ----------------
   async function loadUsers() {
     try {
-      const res = await fetch(`${API_BASE}/users`);
+      const res = await retryRequest(`${API_BASE}/users`);
       const data = await res.json();
+      
+      // Fetch orders for the selected date to check which users already have orders
+      const ordersRes = await retryRequest(`${API_BASE}/detailed_summary?date=${datePicker.value}`);
+      const ordersData = await ordersRes.json();
+      const existingUserIds = new Set((ordersData.orders || []).map(o => o.whatsapp_id));
+      
       createUser.innerHTML = "";
-      data.users.forEach((u) => {
+      
+      // Filter users - only show users without orders on the selected date
+      const availableUsers = data.users.filter(u => !existingUserIds.has(u.whatsapp_id));
+      
+      if (availableUsers.length === 0) {
+        const opt = document.createElement("option");
+        opt.disabled = true;
+        opt.textContent = "All users already have orders for this date";
+        createUser.appendChild(opt);
+        return;
+      }
+      
+      availableUsers.forEach((u) => {
         const opt = document.createElement("option");
         opt.value = u.whatsapp_id;
         opt.textContent = u.username;
@@ -228,13 +284,14 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } catch (err) {
       console.error("Failed to load users", err);
+      alert("Error loading users. Please try again.");
     }
   }
 
   // Open create modal
   createOrderBtn.addEventListener("click", async () => {
     await loadUsers();
-    createDate.value = today();
+    createDate.value = datePicker.value;
     createModal.classList.remove("hidden");
   });
 
@@ -264,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     showLoader();
     try {
-      const res = await fetch(`${API_BASE}/orders`, {
+      const res = await retryRequest(`${API_BASE}/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -286,6 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
     tableBody.innerHTML = "";
     if (orders.length === 0) {
       noOrders.classList.remove("hidden");
+      updateCountBox([]);
       return;
     }
     noOrders.classList.add("hidden");
@@ -310,6 +368,9 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       tableBody.appendChild(tr);
     });
+
+    // Update count box with orders
+    updateCountBox(orders);
   }
 
   // Escape HTML

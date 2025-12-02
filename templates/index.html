@@ -15,9 +15,38 @@
     </header>
 
     <section class="controls">
-      <label for="datePicker">📅 Select Date:</label>
-      <input type="date" id="datePicker" />
-      <button id="createOrderBtn" class="create-btn">➕ New Order</button>
+      <div class="controls-row">
+        <div class="controls-inputs">
+          <label for="datePicker">📅 Select Date:</label>
+          <input type="date" id="datePicker" />
+          <button id="createOrderBtn" class="create-btn">➕ New Order</button>
+        </div>
+      </div>
+      
+      <!-- Count Box -->
+      <div class="count-box">
+        <div class="count-item breakfast">
+          <span class="count-icon">🥐</span>
+          <div class="count-content">
+            <p class="count-label">Breakfast</p>
+            <p class="count-value" id="breakfastCount">0</p>
+          </div>
+        </div>
+        <div class="count-item lunch">
+          <span class="count-icon">🍽️</span>
+          <div class="count-content">
+            <p class="count-label">Lunch</p>
+            <p class="count-value" id="lunchCount">0</p>
+          </div>
+        </div>
+        <div class="count-item dinner">
+          <span class="count-icon">🍴</span>
+          <div class="count-content">
+            <p class="count-label">Dinner</p>
+            <p class="count-value" id="dinnerCount">0</p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Loader -->
