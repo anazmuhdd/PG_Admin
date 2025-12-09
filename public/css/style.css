@@ -569,6 +569,128 @@ button:hover {
   font-weight: bold;
 }
 
+/* Remarks Section Styles */
+.remarks-section {
+  padding: 16px;
+  background: var(--bg);
+  border-radius: 12px;
+  margin: 0 16px 16px 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.remarks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.remarks-container label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.remarks-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.remarks-textarea {
+  flex: 1;
+  padding: 12px;
+  font-size: 0.95rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.remarks-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+}
+
+.remarks-textarea::placeholder {
+  color: #aaa;
+}
+
+.remarks-btn {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  height: fit-content;
+  margin-top: 0;
+}
+
+.remarks-btn:hover {
+  background: #5a52d5;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(108, 99, 255, 0.3);
+}
+
+.remarks-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.remarks-display {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.1) 0%, rgba(46, 204, 113, 0.1) 100%);
+  padding: 14px;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+}
+
+.remarks-display.hidden {
+  display: none;
+}
+
+.remarks-display p {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+@media (max-width: 600px) {
+  .remarks-section {
+    margin: 0 12px 12px 12px;
+    padding: 12px;
+  }
+
+  .remarks-input-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .remarks-textarea {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .remarks-btn {
+    width: 100%;
+    padding: 11px;
+    font-size: 0.9rem;
+  }
+}
+
 
 
 

@@ -23,10 +23,16 @@ const PASSWORD = "anuammuaju2022";
 
 // Login route
 app.get("/", (req, res) => {
+  if (req.session.loggedIn) {
+    return res.redirect("/admin");
+  }
   res.sendFile(path.join(__dirname, "templates", "login.html"));
 });
 
 app.post("/login", (req, res) => {
+  if (req.session.loggedIn) {
+    return res.redirect("/admin");
+  }
   const { username, password } = req.body;
   if (username === USERNAME && password === PASSWORD) {
     req.session.loggedIn = true;
@@ -52,5 +58,5 @@ app.get("/logout", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port http://localhost:${PORT}`);
 });

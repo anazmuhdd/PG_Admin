@@ -1,12 +1,8 @@
-// js/app.js
 const API_BASE = "https://pg-app-backend.onrender.com";
-
-// ============ RETRY LOGIC FOR 500 ERRORS ============
 async function retryRequest(url, options = {}, retries = 3, delay = 1000) {
   try {
     const response = await fetch(url, options);
 
-    // If it's a 500 error and we have retries left, retry
     if (response.status === 500 && retries > 0) {
       console.warn(
         `⚠️ Server 500 error. Retrying ${url} in ${delay}ms... (${retries} retries left)`
@@ -63,6 +59,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const createDate = document.getElementById("createDate");
   const createCanceled = document.getElementById("createCanceled");
 
+  // Remarks section
+  const remarksInput = document.getElementById("remarksInput");
+  const saveRemarksBtn = document.getElementById("saveRemarksBtn");
+  const remarksDisplay = document.getElementById("remarksDisplay");
+  const remarksText = document.getElementById("remarksText");
+
   // Loader overlay
   const loader = document.createElement("div");
   loader.id = "loaderOverlay";
@@ -87,12 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Render initial table
   fetchAndRender(datePicker.value);
-
-  // Date change handler
-  datePicker.addEventListener("change", () => {
-    fetchAndRender(datePicker.value);
-    console.log(datePicker.value);
-  });
+  loadRemark(datePicker.value);
 
   // Table click handling
   tableBody.addEventListener("click", (e) => {
@@ -394,6 +391,69 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update count box with orders
     updateCountBox(orders);
   }
+
+  // ============ REMARKS FUNCTIONS ============
+  async function loadRemark(date) {
+    try {
+      const res = await retryRequest(`${API_BASE}/orders/remark/${date}`);
+      const data = await res.json();
+      if (data.remark) {
+        remarksInput.value = data.remark;
+        remarksText.textContent = data.remark;
+        remarksDisplay.classList.remove("hidden");
+      } else {
+        remarksInput.value = "";
+        remarksDisplay.classList.add("hidden");
+      }
+    } catch (err) {
+      console.error("Failed to load remarks", err);
+      remarksInput.value = "";
+      remarksDisplay.classList.add("hidden");
+    }
+  }
+
+  async function saveRemark() {
+    const remark = remarksInput.value.trim();
+    const date = datePicker.value;
+
+    if (!remark) {
+      alert("Please enter a remark");
+      return;
+    }
+
+    showLoader();
+    try {
+      const res = await retryRequest(`${API_BASE}/orders/remark`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          remark: remark,
+          date: date,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to save remark");
+      
+      remarksText.textContent = remark;
+      remarksDisplay.classList.remove("hidden");
+      alert("✅ Remark saved successfully");
+    } catch (err) {
+      console.error("Failed to save remark:", err);
+      alert("Error saving remark: " + err.message);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  // ============ EVENT LISTENERS ============
+  saveRemarksBtn.addEventListener("click", saveRemark);
+
+  // Load remarks when date changes
+  datePicker.addEventListener("change", () => {
+    fetchAndRender(datePicker.value);
+    loadRemark(datePicker.value);
+    console.log(datePicker.value);
+  });
 
   // Escape HTML
   function escapeHtml(str) {
