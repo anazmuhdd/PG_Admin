@@ -397,9 +397,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await retryRequest(`${API_BASE}/orders/remark/${date}`);
       const data = await res.json();
-      if (data.remark) {
-        remarksInput.value = data.remark;
-        remarksText.textContent = data.remark;
+      if (data.remarks) {
+        remarksInput.value = data.remarks;
+        remarksText.textContent = data.remarks;
         remarksDisplay.classList.remove("hidden");
       } else {
         remarksInput.value = "";
@@ -427,7 +427,7 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          remark: remark,
+          remarks: remark,
           date: date,
         }),
       });
